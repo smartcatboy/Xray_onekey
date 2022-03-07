@@ -42,7 +42,7 @@ cert_group="nobody"
 random_num=$((RANDOM % 12 + 8))
 
 VERSION=$(echo "${VERSION}" | awk -F "[()]" '{print $2}')
-WS_PATH="/$(head -n 10 /dev/urandom | md5sum | head -c ${random_num})/"
+WS_PATH="/$(head -n 10 /dev/urandom | md5sum | head -c ${random_num})"
 
 function shell_mode_check() {
   if [ -f ${xray_conf_dir}/config.json ]; then
@@ -159,6 +159,7 @@ function nginx_install() {
   fi
   # 遗留问题处理
   mkdir -p /etc/nginx/conf.d >/dev/null 2>&1
+  rm -rf /etc/nginx/conf.d/default.conf
 }
 function dependency_install() {
   ${INS} wget lsof tar
@@ -322,7 +323,7 @@ function modify_nginx_port() {
 }
 
 function modify_nginx_ws(){
-  sed -i "s|location /\w\+/|location ${WS_PATH}|" ${nginx_conf}
+  sed -i "s|location /\w\+|location ${WS_PATH}|" ${nginx_conf}
   judge "Nginx ws 修改"
 }
 
@@ -637,7 +638,7 @@ menu() {
   14)
     DOMAIN=$(cat ${domain_tmp_dir}/domain)
     nginx_conf="/etc/nginx/conf.d/${DOMAIN}.conf"
-    read -rp "请输入路径(示例：/wulabing/ 要求两侧都包含/):" WS_PATH
+    read -rp "请输入路径(示例：/wulabing 要求左侧包含/):" WS_PATH
     modify_ws
     modify_nginx_ws
     restart_all
