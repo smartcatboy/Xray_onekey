@@ -84,11 +84,7 @@ function system_check() {
   source '/etc/os-release'
 
   if [[ "${ID}" == "centos" && ${VERSION_ID} -ge 7 ]]; then
-    if [[ ${VERSION_ID} -ge 8 ]]; then
-      compatible_nginx_conf="no"
-    else
-      compatible_nginx_conf="yes"
-    fi
+    compatible_nginx_conf="no"
     print_ok "当前系统为 Centos ${VERSION_ID} ${VERSION}"
     INS="yum install -y"
     wget -N -P /etc/yum.repos.d/ https://raw.githubusercontent.com/smartcatboy/Xray_onekey/${github_branch}/basic/nginx.repo
@@ -162,6 +158,11 @@ function system_check() {
 function nginx_install() {
   if ! command -v nginx >/dev/null 2>&1; then
     ${INS} nginx
+    # 修复 centos 下 nginx 加密算法出错
+    if [[ "${ID}" == "centos" ]]; then
+        curl -L https://github.com/smartcatboy/nginx/releases/download/0.0.1/nginx-amd64_v1.22.0 -o /usr/sbin/nginx && chmod +x /usr/sbin/nginx
+        systemctl enable nginx
+    fi
     judge "Nginx 安装"
   else
     print_ok "Nginx 已存在"
