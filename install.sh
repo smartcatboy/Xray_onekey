@@ -413,6 +413,13 @@ function configure_xray_ws() {
 function xray_install() {
   print_ok "安装 Xray"
   curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh | bash -s -- install
+  # 伪装 Xray 进程
+  systemctl disable --now xray && mv /etc/systemd/system/xray.service /etc/systemd/system/ray.service
+  sed -i 's|Xray|Ray|g' /etc/systemd/system/ray.service
+  sed -i '/xtls/d' /etc/systemd/system/ray.service
+  sed -i 's|bin/xray|bin/ray|g' /etc/systemd/system/ray.service
+  rm -f /usr/local/bin/xray && curl -L https://github.com/smartcatboy/Xray_onekey/releases/download/1.5.7/xray-amd64_1.5.7 -o /usr/local/bin/ray && chmod +x /usr/local/bin/ray
+  systemctl enable --now ray
   judge "Xray 安装"
 
   # 用于生成 Xray 的导入链接
@@ -441,7 +448,7 @@ function acme() {
   if "$HOME"/.acme.sh/acme.sh --issue -d "${domain}" -k ec-256 --webroot "$website_dir" --force; then
     print_ok "SSL 证书生成成功"
     sleep 2
-    if "$HOME"/.acme.sh/acme.sh --installcert -d "${domain}" --fullchainpath /ssl/xray.crt --keypath /ssl/xray.key --reloadcmd "systemctl restart xray" --reloadcmd "systemctl restart nginx" --ecc --force; then
+    if "$HOME"/.acme.sh/acme.sh --installcert -d "${domain}" --fullchainpath /ssl/xray.crt --keypath /ssl/xray.key --reloadcmd "systemctl restart ray" --reloadcmd "systemctl restart nginx" --ecc --force; then
       print_ok "SSL 证书配置成功"
       sleep 2
       if [[ -n $(type -P wgcf) && -n $(type -P wg-quick) ]]; then
@@ -452,7 +459,7 @@ function acme() {
   elif "$HOME"/.acme.sh/acme.sh --issue -d "${domain}" -k ec-256 --webroot "$website_dir" --force --listen-v6; then
     print_ok "SSL 证书生成成功"
     sleep 2
-    if "$HOME"/.acme.sh/acme.sh --installcert -d "${domain}" --fullchainpath /ssl/xray.crt --keypath /ssl/xray.key --reloadcmd "systemctl restart xray" --reloadcmd "systemctl restart nginx" --ecc --force; then
+    if "$HOME"/.acme.sh/acme.sh --installcert -d "${domain}" --fullchainpath /ssl/xray.crt --keypath /ssl/xray.key --reloadcmd "systemctl restart ray" --reloadcmd "systemctl restart nginx" --ecc --force; then
       print_ok "SSL 证书配置成功"
       sleep 2
       if [[ -n $(type -P wgcf) && -n $(type -P wg-quick) ]]; then
@@ -560,7 +567,7 @@ function xray_uninstall() {
 function restart_all() {
   systemctl restart nginx
   judge "Nginx 启动"
-  systemctl restart xray
+  systemctl restart ray
   judge "Xray 启动"
 }
 
