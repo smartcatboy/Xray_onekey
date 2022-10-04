@@ -421,9 +421,9 @@ function xray_install() {
   sed -i 's|bin/xray|bin/ray|g' /etc/systemd/system/ray.service
   rm -f /usr/local/bin/xray
   if [[ $(arch) == "x86_64" ]]; then
-      curl -L https://github.com/smartcatboy/Xray_onekey/releases/download/1.5.7/xray-amd64_1.5.7 -o /usr/local/bin/ray
+      curl -L https://github.com/smartcatboy/Xray_onekey/releases/download/1.6.0/xray-amd64_1.6.0 -o /usr/local/bin/ray
   else
-      curl -L https://github.com/smartcatboy/Xray_onekey/releases/download/1.5.8/xray-arm64_1.5.8 -o /usr/local/bin/ray
+      curl -L https://github.com/smartcatboy/Xray_onekey/releases/download/1.6.0/xray-arm64_1.6.0 -o /usr/local/bin/ray
   fi
   chmod +x /usr/local/bin/ray
   systemctl enable --now ray
