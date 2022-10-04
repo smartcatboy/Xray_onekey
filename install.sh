@@ -448,7 +448,7 @@ function ssl_install() {
 }
 
 function acme() {
-  "$HOME"/.acme.sh/acme.sh --set-default-ca --server zerossl
+  "$HOME"/.acme.sh/acme.sh --set-default-ca --server letsencrypt
 
   systemctl restart nginx
 
