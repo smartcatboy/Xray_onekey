@@ -419,7 +419,13 @@ function xray_install() {
   sed -i 's|Xray|Ray|g' /etc/systemd/system/ray.service
   sed -i '/xtls/d' /etc/systemd/system/ray.service
   sed -i 's|bin/xray|bin/ray|g' /etc/systemd/system/ray.service
-  rm -f /usr/local/bin/xray && curl -L https://github.com/smartcatboy/Xray_onekey/releases/download/1.5.7/xray-amd64_1.5.7 -o /usr/local/bin/ray && chmod +x /usr/local/bin/ray
+  rm -f /usr/local/bin/xray
+  if [[ $(arch) == "x86_64" ]]; then
+      curl -L https://github.com/smartcatboy/Xray_onekey/releases/download/1.5.7/xray-amd64_1.5.7 -o /usr/local/bin/ray
+  else
+      curl -L https://github.com/smartcatboy/Xray_onekey/releases/download/1.5.8/xray-arm64_1.5.8 -o /usr/local/bin/ray
+  fi
+  chmod +x /usr/local/bin/ray
   systemctl enable --now ray
   judge "Xray 安装"
 
