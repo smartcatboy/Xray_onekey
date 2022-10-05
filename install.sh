@@ -353,7 +353,7 @@ function modify_nginx_port() {
 }
 
 function modify_nginx_ws(){
-  sed -i "s|location /\w\+|location ${WS_PATH}|" ${nginx_conf}
+  sed -i "s|location /\?\w\+|location ${WS_PATH}|" ${nginx_conf}
   judge "Nginx ws 修改"
 }
 
